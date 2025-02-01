@@ -1,74 +1,60 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const terminal = document.getElementById("terminal");
-    const output = document.getElementById("output");
-    let commandHistory = [];
-    let historyIndex = 0;
+    const input = document.getElementById("terminal-input");
+    const output = document.getElementById("terminal-output");
 
-    document.addEventListener("keydown", function (event) {
-        let inputField = document.getElementById("input");
-
+    input.addEventListener("keydown", function (event) {
         if (event.key === "Enter") {
-            let command = inputField.textContent.trim();
-            output.innerHTML += `<p>guest@dhiran-gen:~$ ${command}</p>`;
-            commandHistory.push(command);
-            historyIndex = commandHistory.length;
-
-            executeCommand(command);
-            inputField.textContent = "";
-        } else if (event.key === "Backspace") {
-            inputField.textContent = inputField.textContent.slice(0, -1);
-        } else if (event.key.length === 1) {
-            inputField.textContent += event.key;
+            event.preventDefault();
+            const command = input.value.trim();
+            input.value = "";
+            processCommand(command);
         }
     });
 
-    function executeCommand(command) {
-        let response = "";
-        switch (command.toLowerCase()) {
-            case "help":
-                response = `
-                <p>Available commands:</p>
-                <p>about - About me</p>
-                <p>education - My degrees and certifications</p>
-                <p>skills - Tech stack & skills</p>
-                <p>projects - List of my projects</p>
-                <p>experience - Work experience</p>
-                <p>achievements - Awards and recognitions</p>
-                <p>contact - How to reach me</p>
-                <p>resume - Download my resume</p>
-                <p>clear - Clear the terminal</p>`;
-                break;
-            case "about":
-                response = "<p>Hi, I'm Dhiran! A passionate backend engineer specializing in Golang, blockchain, and DevOps.</p>";
-                break;
-            case "education":
-                response = "<p>Bachelor's in Computer Science - NIT Agartala</p>";
-                break;
-            case "skills":
-                response = "<p>Golang, Blockchain, Hyperledger Fabric, Docker, Kubernetes, gRPC, Rust, DevOps, DSA</p>";
-                break;
-            case "projects":
-                response = "<p>1. Zapper-like Blockchain Dashboard<br>2. Hyperledger Fabric Integration<br>3. Real-time Crypto Tracker</p>";
-                break;
-            case "experience":
-                response = "<p>Software Engineer @ [Company Name]<br>Backend Developer @ [Previous Company]</p>";
-                break;
-            case "achievements":
-                response = "<p>🏆 Cracked top tech interviews<br>🏆 Built high-performance blockchain applications</p>";
-                break;
-            case "contact":
-                response = "<p>Email: dhiran@example.com<br>GitHub: github.com/dhiran-gen<br>LinkedIn: linkedin.com/in/dhiran-gen</p>";
-                break;
-            case "resume":
-                response = "<p>Downloading resume...</p>";
-                window.open("resume.pdf", "_blank");
-                break;
-            case "clear":
+    function processCommand(command) {
+        if (!command) return;
+
+        const prompt = `<p><span class="prompt">guest@DHIRAN:~$</span> ${command}</p>`;
+        output.innerHTML += prompt;
+
+        let response = executeCommand(command.toLowerCase());
+        output.innerHTML += `<p>${response}</p>`;
+
+        output.scrollTop = output.scrollHeight;
+    }
+
+    function executeCommand(cmd) {
+        const commands = {
+            "help": `
+Available commands:
+- about       : About me
+- skills      : My tech stack
+- projects    : List of my projects
+- resume      : Download my resume
+- github      : Open my GitHub
+- linkedin    : Open my LinkedIn
+- clear       : Clear the terminal
+- print dhiran: Print "DHIRAN" in uppercase in the terminal
+            `,
+            "about": "Software Engineer | Golang | Blockchain | Hyperledger Fabric.",
+            "skills": "Golang, Rust, TypeScript, Hyperledger, Kafka, Docker, Kubernetes, GCP, AWS, etc.",
+            "projects": "Check my GitHub for projects: <a href='https://github.com/dhiran-gen' target='_blank'>GitHub</a>",
+            "resume": "<a href='resume.pdf' download>Download Resume</a>",
+            "github": "<a href='https://github.com/dhiran-gen' target='_blank'>GitHub</a>",
+            "linkedin": "<a href='https://www.linkedin.com/in/dhiranyadav/' target='_blank'>LinkedIn</a>",
+            "clear": function () {
                 output.innerHTML = "";
-                return;
-            default:
-                response = `<p>Command not found: ${command}</p>`;
+                return "";
+            },
+            "print dhiran": function () {
+                return "<strong>DHIRAN</strong>";
+            }
+        };
+
+        if (commands[cmd]) {
+            return typeof commands[cmd] === "function" ? commands[cmd]() : commands[cmd];
+        } else {
+            return `Command not found: ${cmd}<br>Type 'help' to see available commands.`;
         }
-        output.innerHTML += response;
     }
 });
