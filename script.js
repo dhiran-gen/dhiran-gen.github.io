@@ -34,7 +34,6 @@ Available commands:
 - github      : Open my GitHub
 - linkedin    : Open my LinkedIn
 - clear       : Clear the terminal
-- print dhiran: Print "DHIRAN" in uppercase in the terminal
             `,
             "about": "Software Engineer | Golang | Blockchain | Hyperledger Fabric.",
             "skills": "Golang, Rust, TypeScript, Hyperledger, Kafka, Docker, Kubernetes, GCP, AWS, etc.",
